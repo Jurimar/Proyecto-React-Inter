@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, registerUser } from '../Redux/userSlice';
+import {login} from '../Actions/authActions';
+import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../Redux/store';
 
 interface FormData {
@@ -12,7 +14,18 @@ interface FormData {
 
 const LoginComponent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, error } = useSelector((state: RootState) => state.user);
+  const { loading,error: authError,user} = useSelector((state: RootState) => state.user);
+  const authState = useSelector((state: RootState) => state.user);
+  const navigate = useNavigate();
+
+  
+  useEffect(() => {
+    if (authState.user) {
+      navigate('/events'); 
+    }
+  }, [authState.user, navigate]);
+
+  
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState<FormData>({
     username: '',
@@ -21,41 +34,75 @@ const LoginComponent: React.FC = () => {
     confirmPassword: '',
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+    
+  //   try {
+  //     console.log('Enviando datos de inicio de sesión:', formData);
+  //     if (isLogin) {
+  //      await dispatch(login({ username: formData.username, password: formData.password }));
+    
+
+
+  //       if (authState.user) {
+  //         console.log('Logeo exitoso');
+  //         navigate('/events');
+  //       } else {
+  //         // Si la acción falla, muestra el error
+  //         throw new Error('Error al iniciar sesión');
+  //       }
+  //     } else {
+  //       if (formData.password !== formData.confirmPassword) {
+  //         throw new Error('Las contraseñas no coinciden');
+  //       }
+  //       await dispatch(registerUser(formData));
+  //     }
+  //   } catch (err: any) {
+  //     setError(err.message || 'Error inesperado');
+  //     console.error(err);
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
     try {
+      console.log('Enviando datos de inicio de sesión:', formData);
       if (isLogin) {
-        const result = await dispatch(loginUser({ username: formData.username, password: formData.password })).unwrap();
-        console.log('Login successful:', result);
+        await dispatch(login({ username: formData.username, password: formData.password }));
+
+        if (user) {
+          console.log('Logeo exitoso');
+          navigate('/events');
+        } else {
+          throw new Error(authError || 'Error al iniciar sesión');
+        }
       } else {
         if (formData.password !== formData.confirmPassword) {
-          throw new Error("Las contraseñas no coinciden");
+          throw new Error('Las contraseñas no coinciden');
         }
-        const result = await dispatch(registerUser({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password
-        })).unwrap();
-        console.log('Registration successful:', result);
+        await dispatch(registerUser(formData));
       }
-    } catch (err) {
-      console.error('Error durante la autenticación:', err);
+    } catch (err: any) {
+      setError(err.message || 'Error inesperado');
+      console.error(err);
     }
   };
 
-  const toggleForm = () => {
-    setIsLogin(!isLogin);
-    setFormData({ username: '', email: '', password: '', confirmPassword: '' });
-  };
 
+
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+     <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">
           {isLogin ? 'Iniciar Sesión' : 'Registrarse'}
         </h2>
@@ -65,36 +112,44 @@ const LoginComponent: React.FC = () => {
             <span className="block sm:inline">{error}</span>
           </div>
         )}
+        {authError && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong className="font-bold">Error: </strong>
+            <span className="block sm:inline">{authError}</span>
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="username" className="block text-gray-700 font-bold mb-2">
-                Nombre de usuario
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          {!isLogin && (
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
-              Email
+            <label htmlFor="username" className="block text-gray-700 font-bold mb-2">
+              Nombre de usuario
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              aria-required="true"
             />
           </div>
+          {!isLogin && (
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+                aria-required="true"
+              />
+            </div>
           )}
           <div className="mb-4">
             <label htmlFor="password" className="block text-gray-700 font-bold mb-2">
@@ -108,6 +163,7 @@ const LoginComponent: React.FC = () => {
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              aria-required="true"
             />
           </div>
           {!isLogin && (
@@ -123,6 +179,7 @@ const LoginComponent: React.FC = () => {
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                aria-required="true"
               />
             </div>
           )}
@@ -133,16 +190,10 @@ const LoginComponent: React.FC = () => {
           >
             {loading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
           </button>
-        </form>
-        <p className="mt-4 text-center">
-          {isLogin ? '¿No tienes una cuenta?' : '¿Ya tienes una cuenta?'}
-          <button
-            onClick={toggleForm}
-            className="ml-1 text-blue-500 hover:text-blue-600 focus:outline-none"
-          >
-            {isLogin ? 'Regístrate' : 'Inicia Sesión'}
+          <button type="button" onClick={() => setIsLogin(!isLogin)} className="mt-4 text-blue-500 hover:text-blue-600 focus:outline-none">
+            {isLogin ? '¿No tienes una cuenta? Regístrate' : '¿Ya tienes una cuenta? Inicia Sesión'}
           </button>
-        </p>
+        </form>
       </div>
     </div>
   );

@@ -84,7 +84,8 @@ export const userSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.error = null;
+      state.loading = false; // Limpia el estado de loading al cerrar sesión
+      state.error = null; // Limpia cualquier error
     },
   },
   extraReducers: (builder) => {
@@ -95,11 +96,11 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload; // Asegúrate de que esto se establece correctamente
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string; // Captura el error
       })
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
@@ -107,11 +108,11 @@ export const userSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload; // Guarda el usuario si es necesario
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string; // Captura el error
       });
   },
 });
