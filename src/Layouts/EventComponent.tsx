@@ -4,7 +4,7 @@ function EventComponent() {
   return (
     
     <Navbar>
-        <div>NotfoundComponent</div>
+        <div>EventComponent</div>
     </Navbar>   
   )
 }
