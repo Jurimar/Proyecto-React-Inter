@@ -1,4 +1,12 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+
+interface Event {
+  id: number;
+  name: string;
+  description: string;
+  date: string;
+}
+
 
 interface User {
   id: string;
@@ -7,6 +15,7 @@ interface User {
 }
 
 interface UserState {
+  events: Event[];
   user: User | null;
   loading: boolean;
   error: string | null;
@@ -17,6 +26,7 @@ interface UserState {
 const initialState: UserState = {
   user: null,
   loading: false,
+  events: [],
   error: null,
   isAuthenticated: false,
   currentUser: null,
@@ -82,6 +92,19 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const fetchUserEvents = createAsyncThunk('user/fetchUserEvents', async (userId: number, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`http://localhost:3000/user/${userId}/events`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || `Error ${response.status}: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return rejectWithValue((error as Error).message);
+  }
+});
 
 export const userSlice = createSlice({
   name: "user",
@@ -90,6 +113,7 @@ export const userSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.error = null;
+      state.events = [];
     },
   },
   extraReducers: (builder) => {
@@ -117,6 +141,18 @@ export const userSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchUserEvents.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserEvents.fulfilled, (state, action: PayloadAction<Event[]>) => {
+        state.loading = false;
+        state.events = action.payload;
+      })
+      .addCase(fetchUserEvents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
