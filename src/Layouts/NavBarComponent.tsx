@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link } from "react-router-dom";
+import { ReactNode } from "react";
 
-const Navbar: React.FC = () => {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+const Navbar = ({ children }: LayoutProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
+    <div>
+
+    
     <nav className="bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -13,10 +22,10 @@ const Navbar: React.FC = () => {
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <a href="/login" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-                <a href="/eventos" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Lista de Eventos</a>
-                <a href="/evento" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Detalle de Evento</a>
-                <a href="/perfil" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Perfil de Usuario</a>
+                <Link to="/inicio" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Inicio</Link>
+                <Link to="/eventos" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Lista de Eventos</Link>
+                <Link to="/evento" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Detalle de Evento</Link>
+                <Link to="/perfil" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Perfil de Usuario</Link>
               </div>
             </div>
           </div>
@@ -46,14 +55,17 @@ const Navbar: React.FC = () => {
       {isOpen && (
         <div className="md:hidden" id="mobile-menu">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="/login" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
-            <a href="/eventos" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Lista de Eventos</a>
-            <a href="/evento" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Detalle de Evento</a>
-            <a href="/perfil" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Perfil de Usuario</a>
+            <Link to="/login" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</Link>
+            <Link to="/eventos" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Lista de Eventos</Link>
+            <Link to="/evento" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Detalle de Evento</Link>
+            <Link to="/perfil" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Perfil de Usuario</Link>
           </div>
         </div>
       )}
     </nav>
+    { children }
+    </div>
+    
   );
 };
 

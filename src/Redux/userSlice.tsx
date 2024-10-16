@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 interface User {
+  id: string;
   username: string;
   email: string;
 }
@@ -9,12 +10,16 @@ interface UserState {
   user: User | null;
   loading: boolean;
   error: string | null;
+  isAuthenticated: boolean;
+  currentUser: User | null;
 }
 
 const initialState: UserState = {
   user: null,
   loading: false,
   error: null,
+  isAuthenticated: false,
+  currentUser: null,
 };
 
 export const loginUser = createAsyncThunk(
@@ -96,6 +101,8 @@ export const userSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        state.isAuthenticated = true;
+        state.currentUser = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, registerUser } from '../Redux/userSlice';
 import { AppDispatch, RootState } from '../Redux/store';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
   username: string;
@@ -12,14 +13,21 @@ interface FormData {
 
 const LoginComponent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, error } = useSelector((state: RootState) => state.user);
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.user);
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/inicio');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -32,6 +40,8 @@ const LoginComponent: React.FC = () => {
       if (isLogin) {
         const result = await dispatch(loginUser({ username: formData.username, password: formData.password })).unwrap();
         console.log('Login successful:', result);
+        navigate('/inicio');
+        console.log('Pasó por aquí');
       } else {
         if (formData.password !== formData.confirmPassword) {
           throw new Error("Las contraseñas no coinciden");
@@ -42,6 +52,7 @@ const LoginComponent: React.FC = () => {
           password: formData.password
         })).unwrap();
         console.log('Registration successful:', result);
+        navigate('/login');
       }
     } catch (err) {
       console.error('Error durante la autenticación:', err);
