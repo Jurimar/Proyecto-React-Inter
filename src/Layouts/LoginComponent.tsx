@@ -1,199 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, registerUser } from '../Redux/userSlice';
-import {login} from '../Actions/authActions';
-import { useNavigate } from 'react-router-dom';
-import { AppDispatch, RootState } from '../Redux/store';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../Redux/ReduxStore'; // Asegúrate de que la ruta sea correcta
+import { setUserData, registerUser } from '../Redux/ReduxActions'; // Asegúrate de que la ruta sea correcta
 
-interface FormData {
+interface UserData {
   username: string;
-  email: string;
   password: string;
-  confirmPassword?: string;
+  email: string;
 }
 
 const LoginComponent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { loading,error: authError,user} = useSelector((state: RootState) => state.user);
-  const authState = useSelector((state: RootState) => state.user);
-  const navigate = useNavigate();
-
-  
-  useEffect(() => {
-    if (authState.user) {
-      navigate('/events'); 
-    }
-  }, [authState.user, navigate]);
-
-  
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState<FormData>({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-
-  const [error, setError] = useState<string | null>(null);
+  const { username, password, email, message } = useSelector((state: RootState) => state);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    dispatch(setUserData({ [name]: value } as Partial<UserData>));
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-    
-  //   try {
-  //     console.log('Enviando datos de inicio de sesión:', formData);
-  //     if (isLogin) {
-  //      await dispatch(login({ username: formData.username, password: formData.password }));
-    
-
-
-  //       if (authState.user) {
-  //         console.log('Logeo exitoso');
-  //         navigate('/events');
-  //       } else {
-  //         // Si la acción falla, muestra el error
-  //         throw new Error('Error al iniciar sesión');
-  //       }
-  //     } else {
-  //       if (formData.password !== formData.confirmPassword) {
-  //         throw new Error('Las contraseñas no coinciden');
-  //       }
-  //       await dispatch(registerUser(formData));
-  //     }
-  //   } catch (err: any) {
-  //     setError(err.message || 'Error inesperado');
-  //     console.error(err);
-  //   }
-  // };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-
-    try {
-      console.log('Enviando datos de inicio de sesión:', formData);
-      if (isLogin) {
-        await dispatch(login({ username: formData.username, password: formData.password }));
-
-        if (user) {
-          console.log('Logeo exitoso');
-          navigate('/events');
-        } else {
-          throw new Error(authError || 'Error al iniciar sesión');
-        }
-      } else {
-        if (formData.password !== formData.confirmPassword) {
-          throw new Error('Las contraseñas no coinciden');
-        }
-        await dispatch(registerUser(formData));
-      }
-    } catch (err: any) {
-      setError(err.message || 'Error inesperado');
-      console.error(err);
-    }
+    dispatch(registerUser({ username, password, email }));
   };
 
-
-
-  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-     <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          {isLogin ? 'Iniciar Sesión' : 'Registrarse'}
-        </h2>
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong className="font-bold">Error: </strong>
-            <span className="block sm:inline">{error}</span>
-          </div>
-        )}
-        {authError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong className="font-bold">Error: </strong>
-            <span className="block sm:inline">{authError}</span>
-          </div>
-        )}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700 font-bold mb-2">
-              Nombre de usuario
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-              aria-required="true"
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+      <div className="w-full max-w-md bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="p-6">
+          <div className="flex flex-col items-center mb-6">
+            <img 
+              src="/Icons/LoginComponent-user.png" 
+              alt="Coopeguanacaste Logo" 
+              className="w-30 h-15 object-contain mb-4"
             />
+            <h2 className="text-lg font-semibold text-center">Inicio de sesion Coopeguanacaste, R.L.</h2>
           </div>
-          {!isLogin && (
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
+          
+          <form onSubmit={handleRegister} className="space-y-4">
+            <div className="relative">
+              <input 
+                type="text" 
+                name="username"
+                placeholder="USUARIO" 
+                className="w-full pl-10 pr-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                value={username}
+                onChange={handleInputChange}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="relative">
+              <input 
+                type="password" 
+                name="password"
+                placeholder="CONTRASEÑA" 
+                className="w-full pl-10 pr-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                value={password}
+                onChange={handleInputChange}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="relative">
+              <input 
+                type="email" 
                 name="email"
-                value={formData.email}
+                placeholder="EMAIL" 
+                className="w-full pl-10 pr-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                value={email}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-                aria-required="true"
               />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+            </div>
+            
+            <button 
+              type="submit"
+              className="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50"
+            >
+              Opciones de usuario
+            </button>
+            <button 
+              type="button"
+              className="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50"
+            >
+              Iniciar sesión
+            </button>
+          </form>
+          
+          {message && (
+            <div className="mt-4 text-center text-green-600">
+              {message}
             </div>
           )}
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700 font-bold mb-2">
-              Contraseña
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-              aria-required="true"
-            />
-          </div>
-          {!isLogin && (
-            <div className="mb-4">
-              <label htmlFor="confirmPassword" className="block text-gray-700 font-bold mb-2">
-                Confirmar Contraseña
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-                aria-required="true"
-              />
-            </div>
-          )}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            disabled={loading}
-          >
-            {loading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
-          </button>
-          <button type="button" onClick={() => setIsLogin(!isLogin)} className="mt-4 text-blue-500 hover:text-blue-600 focus:outline-none">
-            {isLogin ? '¿No tienes una cuenta? Regístrate' : '¿Ya tienes una cuenta? Inicia Sesión'}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
