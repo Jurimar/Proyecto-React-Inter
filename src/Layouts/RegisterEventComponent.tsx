@@ -1,30 +1,48 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../Redux/store';
-import { registerEvent, fetchEvents } from '../Redux/eventSlice';
+import React, { useState } from "react";
+import Navbar from "../Layouts/NavBarComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../Redux/store";
+import { registerEvent, fetchEvents } from "../Redux/eventSlice";
 
 const RegisterEventComponent: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const userId = useSelector((state: RootState) => state.user.user?.id);
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [date, setDate] = useState('');
-  
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (userId) {
-        const eventData = { name, description, date, createdBy: parseInt(userId) };
-        await dispatch(registerEvent(eventData));
-        dispatch(fetchEvents());
-      } else {
-        console.error('User ID is undefined');
-      }
-    };
-  
-    return (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+  const dispatch = useDispatch<AppDispatch>();
+  const userId = useSelector((state: RootState) => state.user.user?.id);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userId) {
+      const eventData = {
+        name,
+        description,
+        date,
+        createdBy: parseInt(userId),
+      };
+      await dispatch(registerEvent(eventData));
+      dispatch(fetchEvents());
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+  };
+
+  return (
+    <Navbar>
+      {showAlert && (
+        <div className="bg-green-500 text-white p-4 rounded mb-4">
+          Evento registrado exitosamente.
+        </div>
+      )}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-md"
+      >
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Nombre del Evento:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Nombre del Evento:
+          </label>
           <input
             type="text"
             value={name}
@@ -34,7 +52,9 @@ const RegisterEventComponent: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Descripción:
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -43,7 +63,9 @@ const RegisterEventComponent: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Fecha:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Fecha:
+          </label>
           <input
             type="date"
             value={date}
@@ -59,6 +81,7 @@ const RegisterEventComponent: React.FC = () => {
           Registrar Evento
         </button>
       </form>
-    );
-  };
+    </Navbar>
+  );
+};
 export default RegisterEventComponent;
