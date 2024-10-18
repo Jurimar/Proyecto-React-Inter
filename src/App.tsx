@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/eventos/lista" element={<ProtectedRoute><EventListComponent /></ProtectedRoute>} />
         <Route path="/evento/:id" element={<EventDetailComponent />} />
         <Route path="/registrar-evento" element={<ProtectedRoute><RegisterEventComponent /></ProtectedRoute>} />
-        <Route path="/perfil" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} /> {/* Nueva ruta para el perfil */}
+        <Route path="/perfil" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
         <Route path="*" element={<NotfoundComponent />} />
       </Routes>
     </Router>

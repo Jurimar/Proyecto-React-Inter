@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import Navbar from '../Layouts/NavBarComponent'; // Adjust the path as necessary
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../Redux/store';
-import { enrollInEvents, clearSelectedEvents } from '../Redux/eventSlice';
+import { enrollInEvents, clearSelectedEvents,updatedSelectedEvents } from '../Redux/eventSlice';
 import { fetchUserEvents } from '../Redux/userSlice';
 
 const UserProfile: React.FC = () => {
@@ -32,6 +32,12 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  
+  const handleRemoveEvent = (eventId: number) => {
+    const updatedEvents = selectedEvents.filter(event => event.id !== eventId);
+    dispatch(updatedSelectedEvents(updatedEvents));
+  };
+
   if (loading) {
     return <div>Cargando eventos...</div>;
   }
@@ -49,6 +55,7 @@ const UserProfile: React.FC = () => {
         {selectedEvents.map((event) => (
           <li key={event.id}>
             {event.name} - {event.description} - {event.date}
+            <button onClick={() => handleRemoveEvent(event.id)}>Eliminar</button>
           </li>
         ))}
       </ul>

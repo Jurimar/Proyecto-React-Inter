@@ -103,6 +103,9 @@ const eventSlice = createSlice({
     clearSelectedEvents(state) {
       state.selectedEvents = [];
     },
+    updatedSelectedEvents(state, action: PayloadAction<Event[]>) {
+      state.selectedEvents = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -121,5 +124,5 @@ const eventSlice = createSlice({
   },
 });
 
-export const { setEvents, addEvent, selectEvent, clearSelectedEvents } = eventSlice.actions;
+export const { setEvents, addEvent, selectEvent, clearSelectedEvents ,updatedSelectedEvents} = eventSlice.actions;
 export default eventSlice.reducer;
