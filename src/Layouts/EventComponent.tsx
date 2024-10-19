@@ -1,6 +1,5 @@
 // src/Layouts/EventComponent.tsx
 import React from "react";
-import RegisterEventForm from "./RegisterEventComponent";
 import EventList from "./EventListComponents";
 import Navbar from "./NavBarComponent";
 

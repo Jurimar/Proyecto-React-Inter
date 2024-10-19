@@ -41,7 +41,6 @@ const LoginComponent: React.FC = () => {
         const result = await dispatch(loginUser({ username: formData.username, password: formData.password })).unwrap();
         console.log('Login successful:', result);
         navigate('/inicio');
-        console.log('Pasó por aquí');
       } else {
         if (formData.password !== formData.confirmPassword) {
           throw new Error("Las contraseñas no coinciden");
@@ -52,7 +51,8 @@ const LoginComponent: React.FC = () => {
           password: formData.password
         })).unwrap();
         console.log('Registration successful:', result);
-        navigate('/login');
+        alert('Usuario registrado correctamente');
+        navigate('/inicio');
       }
     } catch (err) {
       console.error('Error durante la autenticación:', err);

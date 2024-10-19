@@ -7,7 +7,6 @@ interface Event {
   date: string;
 }
 
-
 interface User {
   id: string;
   username: string;
@@ -114,6 +113,11 @@ export const userSlice = createSlice({
       state.user = null;
       state.error = null;
       state.events = [];
+      state.isAuthenticated = false;
+      state.currentUser = null;
+    },
+    updateUserEvents: (state, action: PayloadAction<Event[]>) => {
+      state.events = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -159,5 +163,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, updateUserEvents } = userSlice.actions;
 export default userSlice.reducer;
