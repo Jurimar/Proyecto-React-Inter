@@ -21,8 +21,7 @@ const EventList: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [eventsPerPage, setEventsPerPage] = useState(8);
     const [isModalOpen, setIsModalOpen] = useState(false); 
-
-
+    const [showAlert, setShowAlert] = useState(false);
     
     const indexOfLastEvent = currentPage * eventsPerPage;
     const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
@@ -50,6 +49,8 @@ const EventList: React.FC = () => {
 
     const handleSelectEventSubs = (event: Event) => {
       dispatch(selectEvent(event));
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
     };
   
     const handleCloseModal = () => {
@@ -67,6 +68,11 @@ const EventList: React.FC = () => {
   
     return (
       <div>
+        {showAlert && (
+          <div className="bg-green-500 text-white p-4 rounded mb-4">
+            Se ha agregado exitosamente a la lista de suscripciones, por favor confirme la suscripcion desde el perfil del usuario.
+          </div>
+        )}
     
       <div>
          <div className="flex justify-between items-center mb-4">

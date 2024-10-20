@@ -43,7 +43,7 @@ const RegisterEventComponent: React.FC = () => {
       dispatch(fetchEvents());
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
-      setFormState({ name: "", description: "", date: "" }); // Reset form after submission
+      setFormState({ name: "", description: "", date: "" }); 
     }
   };
 

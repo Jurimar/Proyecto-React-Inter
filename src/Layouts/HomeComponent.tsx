@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './NavBarComponent';
 import { motion } from 'framer-motion';
-import { Calendar, Music, Palette } from 'lucide-react';
 
 const HomeComponent: React.FC = () => {
   const navigate = useNavigate();
@@ -31,25 +30,7 @@ const HomeComponent: React.FC = () => {
           Tu puerta de entrada a experiencias y conexiones inolvidables
         </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { icon: Calendar, title: "Eventos Diversos", description: "Desde charlas tecnológicas hasta exposiciones de arte" },
-            { icon: Music, title: "Comunidad Vibrante", description: "Conéctate con personas afines" },
-            { icon: Palette, title: "Libertad Creativa", description: "Da vida a tus ideas únicas" }
-          ].map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + index * 0.2 }}
-              className="bg-white p-6 rounded-lg shadow-md text-center"
-            >
-              <item.icon className="mx-auto mb-4 text-indigo-500" size={40} />
-              <h2 className="text-xl font-semibold mb-2">{item.title}</h2>
-              <p className="text-gray-600">{item.description}</p>
-            </motion.div>
-          ))}
-        </div>
+      
 
         <motion.div
           initial={{ opacity: 0 }}
